@@ -1,4 +1,2 @@
 # flask-demo-app
-
-an app for boo boos
-
+Tiny work inprogress app
