@@ -1,12 +1,16 @@
 import random
 import string
+import ast 
 cache = {}
 def search(mapspace:str, target:str):
     file = open("db.dump", "r")
     data = file.read()
     file.close()
     data = data.split("\n")
+    if len(data)<3 or len(data)==3:
+        return None
     del data[0]
+    line = []
     for i in data:
         if i == "":
             raise Exception("Could not find the given mapspace")
@@ -15,7 +19,7 @@ def search(mapspace:str, target:str):
             break
     line[0] = int(line[0])-1
     line[1] = int(line[1])-1
-    if line[0] == line[1] and data[int(line[0])-1].startswith(target):
+    if line[0] == line[1] and data[int(line[0])-2].startswith(target):
         return int(line[0]+1)
     else:
         newdata = data
@@ -25,9 +29,8 @@ def search(mapspace:str, target:str):
         for j in range(len(newdata)):
             if newdata[j+i].startswith(target):
                 return j+i+4
-print(search("USER","{'account': 'Ahsan Ahmed 1"))
 def newAccountHandler(account,password):
-    publish = {"account":account,"password":password}
+    publish = {"account":account,"password":password, "bio":"None"}
     file = open("db.dump", "a")
     z = "\n"+str(publish)
     file.write(z)
@@ -52,10 +55,45 @@ def newAccountHandler(account,password):
         file.close()
         file = open("db.dump", "w")
         file.write(returncontents)
-def authentication(username, password, result1):
-    if search("USER", "{'account': '"+username+"', 'password': '"+password+"'}") == None:
+def authentication(username:string, password:string, result1:string):
+    if search("USER", "{'account': '"+username+"', 'password': '"+password+"',") == None:
         return False
     else:
         cache[username] = result1
         print(cache)
         return True
+def verify(user:string,token:string) -> bool:
+    print(cache)
+    if cache[user] == token:
+        return True
+    else:
+        return False
+def editAccount(username:string, key:string, replacement:string) -> None:
+    location = search("USER","{'account': '"+username)
+    file = open("db.dump", "r")
+    lines = file.readlines()
+    line = lines[location-1:location][0]
+    file.close()
+    record = ast.literal_eval(line)
+    record[key] = replacement
+    file = open("db.dump", "w")
+    ptr = 1
+    newlines = []
+    for i in lines:
+        if ptr != location:
+            try:
+                z = lines[ptr]
+                newlines.append(i)
+            except:
+                raise Exception('No user: "'+username+'" found in the databace')
+        else:
+            try:
+                z = lines[location+1]
+                newlines.append(str(record)+"\n")
+            except:
+                newlines.append(str(record))
+        ptr += 1
+    file.write("".join(newlines))
+    file.close()
+#tests
+#editAccount("Sumaira","bio","test")

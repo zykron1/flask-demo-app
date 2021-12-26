@@ -4,7 +4,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return render_template('index.jinja')
-@app.route('/api/signup', methods=['POST'])
+@app.route('/api/signup/', methods=['POST'])
 def signup():
     x = request.form["username"]
     y = request.form["password"]
@@ -12,7 +12,7 @@ def signup():
         newAccountHandler(x,y)
         return "success"
     return "Name Taken"
-@app.route('/api/usercheck/<name>')
+@app.route('/api/usercheck/<name>/')
 def usercheck(name):
     if search("USER","{'account': "+"'"+name+"'") == None:
         return "All clear!!!"
@@ -25,8 +25,15 @@ def signin():
     result1 =''.join((random.choice(string.ascii_uppercase+string.ascii_lowercase) for codenum in range(256))) + str(random.randint(10,100))
     if authentication(x,y,result1):
         res = make_response("Token Created")
-        res.set_cookie('auth', result1, max_age=60*60*24*365*2)
+        res.set_cookie('auth', result1, max_age=60*60*24*2)
         return res
-    return "Access Denied"
+    return "403 Not Authorized", 403
+@app.route('/api/edit/<name>/<new>/', methods=['POST'])
+def bioedit(name, new):
+    if verify(name,request.cookies.get('auth')):
+        editAccount(name,"bio",new)
+        return "Success"
+    else:
+        return "403 Not Authorized", 403
 if __name__ == '__main__':
     app.run(debug=True)
