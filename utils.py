@@ -103,13 +103,21 @@ def grab(line):
     file.close()
     return out
 def addFollower(name,user):
-    user2 = grab(search("USER","{'account': '"+user))
-    user2 = ast.literal_eval(user2)
+    user2 = ast.literal_eval(grab(search("USER","{'account': '"+user)))
     try:
         user2["followers"]
-        editAccount(user, "followers", user2["followers"].append(name), "USER","{'account': '"+user)
+        editAccount(
+            user, "followers", 
+            user2["followers"].append(name),
+            "USER","{'account': '"+user)
     except:
         editAccount(user, "followers", [name], "USER","{'account': '"+user)
+def removeFollower(name,user):
+    user2 = ast.literal_eval(grab(search("USER","{'account': '"+user)))
+    y = user2["followers"].remove(name)
+    if y == None:
+        y = []
+    editAccount(user,"followers", y, "USER","{'account': '"+user )
 #tests
 #editAccount("Sumaira","bio","test")
 #print(grab(5))

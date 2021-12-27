@@ -56,5 +56,22 @@ def follow(name):
                 return "500 internal error", 500
     except ValueError:
         return "Cookie invalid, signin again", 403
+@app.route('/api/unfollow/<name>/')
+def unfollow(name):
+    try:
+        user = list(cache.keys())[list(cache.values()).index(request.cookies.get("auth"))]
+        user2 = ast.literal_eval(grab(search("USER","{'account': '"+user)))
+        try:
+            user2["following"]
+            y = user2["following"].remove(name)
+            if y == None:
+                y = []
+            editAccount(user, "following",y, "USER","{'account': '"+user)
+            removeFollower(user,name)
+            return "Success"
+        except:
+            return "Not following: "+name
+    except:
+        return "Cookie invalid, signin again", 403
 if __name__ == '__main__':
     app.run(debug=True)
