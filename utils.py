@@ -68,8 +68,8 @@ def verify(user:string,token:string) -> bool:
         return True
     else:
         return False
-def editAccount(username:string, key:string, replacement:string) -> None:
-    location = search("USER","{'account': '"+username)
+def editAccount(username:string, key:string, replacement:string, mapspace:string, begining:string) -> None:
+    location = search(mapspace,begining)
     file = open("db.dump", "r")
     lines = file.readlines()
     line = lines[location-1:location][0]
@@ -82,18 +82,34 @@ def editAccount(username:string, key:string, replacement:string) -> None:
     for i in lines:
         if ptr != location:
             try:
-                z = lines[ptr]
+                z = lines[ptr-1]
                 newlines.append(i)
             except:
                 raise Exception('No user: "'+username+'" found in the databace')
         else:
             try:
-                z = lines[location+1]
+                z = lines[location]
                 newlines.append(str(record)+"\n")
             except:
                 newlines.append(str(record))
         ptr += 1
-    file.write("".join(newlines))
+    write = "".join(newlines)
+    file.write(write)
     file.close()
+def grab(line):
+    file = open("db.dump", "r")
+    lines = file.readlines()
+    out = lines[line-1]
+    file.close()
+    return out
+def addFollower(name,user):
+    user2 = grab(search("USER","{'account': '"+user))
+    user2 = ast.literal_eval(user2)
+    try:
+        user2["followers"]
+        editAccount(user, "followers", user2["followers"].append(name), "USER","{'account': '"+user)
+    except:
+        editAccount(user, "followers", [name], "USER","{'account': '"+user)
 #tests
 #editAccount("Sumaira","bio","test")
+#print(grab(5))

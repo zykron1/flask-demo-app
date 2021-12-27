@@ -31,9 +31,30 @@ def signin():
 @app.route('/api/edit/<name>/<new>/', methods=['POST'])
 def bioedit(name, new):
     if verify(name,request.cookies.get('auth')):
-        editAccount(name,"bio",new)
+        editAccount(name,"bio",new,"USER","{'account': '"+name)
         return "Success"
     else:
         return "403 Not Authorized", 403
+@app.route('/api/follow/<name>/')
+def follow(name):
+    try:
+        user = list(cache.keys())[list(cache.values()).index(request.cookies.get("auth"))]
+        user2 = ast.literal_eval(grab(search("USER","{'account': '"+user)))
+        try:
+            user2["following"]
+            if name in user2["following"]:
+                return "Allready exists on databace"
+            editAccount(user, "following", user2["followers"].append(name), "USER","{'account': '"+user)
+            addFollower(user2['username'],name)
+            return "Success"
+        except:
+            try:
+                editAccount(user, "following", [name], "USER","{'account': '"+user)
+                addFollower(user2['account'],name)
+                return "Success"
+            except:
+                return "500 internal error", 500
+    except ValueError:
+        return "Cookie invalid, signin again", 403
 if __name__ == '__main__':
     app.run(debug=True)
