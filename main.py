@@ -55,7 +55,7 @@ def follow(name):
             except:
                 return "500 internal error", 500
     except ValueError:
-        return "Cookie invalid, signin again", 403
+        return "Cookie invalid, signin again", 400
 @app.route('/api/unfollow/<name>/')
 def unfollow(name):
     try:
@@ -72,7 +72,7 @@ def unfollow(name):
         except:
             return "Not following: "+name
     except:
-        return "Cookie invalid, signin again", 403
+        return "Cookie invalid, signin again", 400
 @app.route('/api/followermap/')
 def followermap():
     try:
@@ -82,6 +82,27 @@ def followermap():
             x = ""
         return str(ast.literal_eval(grab(search("USER","{'account': '"+list(cache.keys())[list(cache.values()).index(request.cookies.get("auth"))])))["following"])+str(x)
     except:
+        return "Cookie invalid, signin again", 400
+@app.route('/api/block/<name>/',  methods=['POST'])
+def block(name):
+    try:
+        user = list(cache.keys())[list(cache.values()).index(request.cookies.get("auth"))]
+        user2 = ast.literal_eval(grab(search("USER","{'account': '"+user)))
+        try:
+            user2["blocked"]
+            if name in user2["blocked"]:
+                return "User is allready blocked!", 400
+            editAccount(user, "blocked", user2["blocked"].append(name), "USER","{'account': '"+user)
+            return "Success"
+        except:
+            try:
+                editAccount(user, "blocked", [name], "USER","{'account': '"+user)
+                return "Success"
+            except:
+                return "500 internal error", 500
+    except ValueError:
         return "Cookie invalid, signin again", 403
+
+
 if __name__ == '__main__':
     app.run(debug=True)
