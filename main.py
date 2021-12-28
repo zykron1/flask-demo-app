@@ -102,7 +102,11 @@ def block(name):
                 return "500 internal error", 500
     except ValueError:
         return "Cookie invalid, signin again", 403
-
-
+@app.route('/api/blocked/')
+def blockedusers():
+    try:
+        return str(ast.literal_eval(grab(search("USER","{'account': '"+list(cache.keys())[list(cache.values()).index(request.cookies.get("auth"))])))["blocked"])
+    except:
+        return "Cookie invalid, signin again", 400
 if __name__ == '__main__':
     app.run(debug=True)
