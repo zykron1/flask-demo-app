@@ -1,6 +1,6 @@
 import random
 import string
-import ast 
+import ast
 cache = {}
 def search(mapspace:str, target:str):
     file = open("db.dump", "r")

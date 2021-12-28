@@ -25,7 +25,7 @@ def signin():
     result1 =''.join((random.choice(string.ascii_uppercase+string.ascii_lowercase) for codenum in range(256))) + str(random.randint(10,100))
     if authentication(x,y,result1):
         res = make_response("Token Created")
-        res.set_cookie('auth', result1, max_age=60*60*24*2)
+        res.set_cookie('auth', result1, max_age=60*60*24*30)
         return res
     return "403 Not Authorized", 403
 @app.route('/api/edit/<name>/<new>/', methods=['POST'])
@@ -71,6 +71,16 @@ def unfollow(name):
             return "Success"
         except:
             return "Not following: "+name
+    except:
+        return "Cookie invalid, signin again", 403
+@app.route('/api/followermap/')
+def followermap():
+    try:
+        try:
+            x = ast.literal_eval(grab(search("USER","{'account': '"+list(cache.keys())[list(cache.values()).index(request.cookies.get("auth"))])))["followers"]
+        except:
+            x = ""
+        return str(ast.literal_eval(grab(search("USER","{'account': '"+list(cache.keys())[list(cache.values()).index(request.cookies.get("auth"))])))["following"])+str(x)
     except:
         return "Cookie invalid, signin again", 403
 if __name__ == '__main__':

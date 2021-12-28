@@ -1,5 +1,5 @@
 MEMORY MAP
 4-5-USER
 
-{'account': 'Sumaira1', 'password': 'test 123', 'bio': 'test', 'followers': []}
-{'account': 'Sumaira2', 'password': 'test 123', 'bio': 'test', 'following': []}
+{'account': 'Ahsan Ahmed', 'password': 'blahblah', 'bio': 'None', 'following': []}
+{'account': 'Ahsan Ahmed2', 'password': 'blahblah', 'bio': 'None', 'followers': []}
