@@ -1,2 +1,2 @@
 # flask-demo-app
-Tiny work inprogress app
+Tiny Social media backend
